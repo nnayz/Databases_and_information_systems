@@ -8,18 +8,21 @@
   <name>real-estate-app</name>
   <url>http://maven.apache.org</url>
   <dependencies>
+    <!-- PostGreSQL JDBC Driver -->
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>42.7.4</version>
     </dependency>
 
+    <!-- Dotenv-java -->
     <dependency>
       <groupId>io.github.cdimascio</groupId>
       <artifactId>dotenv-java</artifactId>
       <version>3.0.0</version>
     </dependency>
-
+  
+    <!-- JUnit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
