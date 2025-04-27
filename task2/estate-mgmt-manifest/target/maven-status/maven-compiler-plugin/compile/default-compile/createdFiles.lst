@@ -1,0 +1,15 @@
+com/example/estate/dao/ApartmentDAO.class
+com/example/estate/model/House.class
+com/example/estate/model/Person.class
+com/example/estate/model/Estate.class
+com/example/estate/model/EstateAgent.class
+com/example/estate/dao/HouseDAO.class
+com/example/estate/model/TenancyContract.class
+com/example/estate/db/DBConnection.class
+com/example/estate/dao/PersonDAO.class
+com/example/estate/model/PurchaseContract.class
+com/example/estate/dao/ContractDAO.class
+com/example/estate/model/Contract.class
+com/example/estate/Main.class
+com/example/estate/model/Apartment.class
+com/example/estate/dao/EstateAgentDAO.class

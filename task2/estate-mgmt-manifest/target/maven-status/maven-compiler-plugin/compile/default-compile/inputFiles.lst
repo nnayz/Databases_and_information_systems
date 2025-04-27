@@ -1,0 +1,15 @@
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/Contract.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/EstateAgent.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/TenancyContract.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/Apartment.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/dao/PersonDAO.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/dao/HouseDAO.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/Person.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/db/DBConnection.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/dao/EstateAgentDAO.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/Main.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/PurchaseContract.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/dao/ContractDAO.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/dao/ApartmentDAO.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/House.java
+/home/aldo/Desktop/UHH/SoSe 25/Database & Information Systems/Exercise 2/Databases_and_information_systems/estate-mgmt-manifest/src/main/java/com/example/estate/model/Estate.java
