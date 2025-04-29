@@ -11,10 +11,9 @@ import java.util.List;
 public class ContractDAO {
 
     public int createContract(Contract c) throws SQLException {
-        String sql = "INSERT INTO contract(contract_no,date,place,person_id,estate_id) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO contract(date,place,person_id,estate_id) VALUES (?,?,?,?,?)";
         try (Connection con = DBConnection.get();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, c.getContractNo());
             ps.setDate(2, Date.valueOf(c.getDate()));
             ps.setString(3, c.getPlace());
             ps.setInt(4, c.getPersonId());
@@ -22,9 +21,9 @@ public class ContractDAO {
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    int id = rs.getInt(1);
-                    c.setId(id);
-                    return id;
+                    int contract_no = rs.getInt(1);
+                    c.setContractNo(contract_no);
+                    return contract_no;
                 }
             }
         }
@@ -33,7 +32,7 @@ public class ContractDAO {
 
     public void createTenancy(TenancyContract tc) throws SQLException {
         int cid = createContract(tc);
-        String sql = "INSERT INTO tenancy_contract(contract_id,start_date,duration,additional_costs) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO tenancycontract(contract_no,start_date,duration,additional_costs) VALUES (?,?,?,?)";
         try (Connection con = DBConnection.get();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, cid);
@@ -46,7 +45,7 @@ public class ContractDAO {
 
     public void createPurchase(PurchaseContract pc) throws SQLException {
         int cid = createContract(pc);
-        String sql = "INSERT INTO purchase_contract(contract_id,installments,interest_rate) VALUES (?,?,?)";
+        String sql = "INSERT INTO purchasecontract(contract_no,installments,interest_rate) VALUES (?,?,?)";
         try (Connection con = DBConnection.get();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, cid);

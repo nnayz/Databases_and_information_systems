@@ -167,7 +167,7 @@ public class Main {
     }
 
     private void signTenancy() throws SQLException {
-        System.out.print("Contract no: "); String no = sc.nextLine();
+        System.out.print("Contract no: "); int no = Integer.parseInt(sc.nextLine());
         System.out.print("Person id: "); int pid = Integer.parseInt(sc.nextLine());
         System.out.print("Apartment estate id: "); int eid = Integer.parseInt(sc.nextLine());
         System.out.print("Start date (YYYY-MM-DD): "); LocalDate start = LocalDate.parse(sc.nextLine());
@@ -178,7 +178,7 @@ public class Main {
     }
 
     private void signPurchase() throws SQLException {
-        System.out.print("Contract no: "); String no = sc.nextLine();
+        System.out.print("Contract no: "); int no = Integer.parseInt(sc.nextLine());
         System.out.print("Person id: "); int pid = Integer.parseInt(sc.nextLine());
         System.out.print("House estate id: "); int eid = Integer.parseInt(sc.nextLine());
         System.out.print("Installments: "); int inst = Integer.parseInt(sc.nextLine());

@@ -28,7 +28,7 @@ public class ApartmentDAO {
                 }
             }
             try (PreparedStatement pst = c.prepareStatement(
-                    "INSERT INTO apartment(estate_id,floor,rent,rooms,balcony,built_in_kitchen) VALUES (?,?,?,?,?,?)")) {
+                    "INSERT INTO apartment(estate_id,floor_number,rent,rooms,balcony,built_in_kitchen) VALUES (?,?,?,?,?,?)")) {
                 pst.setInt(1, a.getId());
                 pst.setInt(2, a.getFloor());
                 pst.setDouble(3, a.getRent());
@@ -49,7 +49,7 @@ public class ApartmentDAO {
     public List<Apartment> findByAgent(int agentId) throws SQLException {
         String sql = 
             "SELECT e.*, ap.* FROM estate e " +
-            "JOIN apartment ap ON ap.estate_id=e.id " +
+            "JOIN apartment ap ON ap.estate_id=e.estate_id " +
             "WHERE e.agent_id=?";
         List<Apartment> list = new ArrayList<>();
         try (Connection c = DBConnection.get(); PreparedStatement ps = c.prepareStatement(sql)) {
@@ -65,7 +65,7 @@ public class ApartmentDAO {
 
     public void delete(int estateId) throws SQLException {
         try (Connection c = DBConnection.get();
-             PreparedStatement ps = c.prepareStatement("DELETE FROM estate WHERE id=?")) {
+             PreparedStatement ps = c.prepareStatement("DELETE FROM estate WHERE estate_id=?")) {
             ps.setInt(1, estateId);
             ps.executeUpdate();
         }
@@ -73,14 +73,14 @@ public class ApartmentDAO {
 
     private Apartment map(ResultSet rs) throws SQLException {
         return new Apartment(
-            rs.getInt("id"),
+            rs.getInt("apartment_id"),
             rs.getString("city"),
             rs.getString("postal_code"),
             rs.getString("street"),
             rs.getString("street_number"),
             rs.getDouble("square_area"),
             rs.getInt("agent_id"),
-            rs.getInt("floor"),
+            rs.getInt("floor_number"),
             rs.getDouble("rent"),
             rs.getInt("rooms"),
             rs.getBoolean("balcony"),

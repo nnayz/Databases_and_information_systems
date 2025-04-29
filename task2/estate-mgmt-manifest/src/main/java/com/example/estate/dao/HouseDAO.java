@@ -47,7 +47,7 @@ public class HouseDAO {
     public List<House> findByAgent(int agentId) throws SQLException {
         String sql = 
             "SELECT e.*, h.* FROM estate e " +
-            "JOIN house h ON h.estate_id=e.id WHERE e.agent_id=?";
+            "JOIN house h ON h.estate_id=e.estate_id WHERE e.agent_id=?";
         List<House> list = new ArrayList<>();
         try (Connection c = DBConnection.get(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, agentId);
@@ -60,7 +60,7 @@ public class HouseDAO {
 
     public void delete(int estateId) throws SQLException {
         try (Connection c = DBConnection.get();
-             PreparedStatement ps = c.prepareStatement("DELETE FROM estate WHERE id=?")) {
+             PreparedStatement ps = c.prepareStatement("DELETE FROM estate WHERE estate_id=?")) {
             ps.setInt(1, estateId);
             ps.executeUpdate();
         }
@@ -68,7 +68,7 @@ public class HouseDAO {
 
     private House map(ResultSet rs) throws SQLException {
         return new House(
-            rs.getInt("id"),
+            rs.getInt("house_id"),
             rs.getString("city"),
             rs.getString("postal_code"),
             rs.getString("street"),

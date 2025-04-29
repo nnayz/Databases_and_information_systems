@@ -7,12 +7,12 @@ public class PurchaseContract extends Contract {
     private double interestRate;
 
     public PurchaseContract() {}
-    public PurchaseContract(int id, String contractNo, LocalDate date, String place,
+    public PurchaseContract(int id, int contractNo, LocalDate date, String place,
                             int personId, int estateId, int installments, double interestRate) {
         super(id, contractNo, date, place, personId, estateId);
         this.installments = installments; this.interestRate = interestRate;
     }
-    public PurchaseContract(String contractNo, LocalDate date, String place,
+    public PurchaseContract(int contractNo, LocalDate date, String place,
                             int personId, int estateId, int installments, double interestRate) {
         this(0, contractNo, date, place, personId, estateId, installments, interestRate);
     }

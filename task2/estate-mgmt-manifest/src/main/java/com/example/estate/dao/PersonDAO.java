@@ -26,9 +26,9 @@ public class PersonDAO {
         List<Person> list = new ArrayList<>();
         try (Connection c = DBConnection.get();
              Statement st = c.createStatement();
-             ResultSet rs = st.executeQuery("SELECT * FROM person ORDER BY id")) {
+             ResultSet rs = st.executeQuery("SELECT * FROM person ORDER BY person_id")) {
             while (rs.next()) {
-                list.add(new Person(rs.getInt("id"), rs.getString("first_name"),
+                list.add(new Person(rs.getInt("person_id"), rs.getString("first_name"),
                         rs.getString("name"), rs.getString("address")));
             }
         }

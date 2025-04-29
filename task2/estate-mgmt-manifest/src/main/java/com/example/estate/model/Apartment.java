@@ -1,7 +1,7 @@
 package com.example.estate.model;
 
 public class Apartment extends Estate {
-    private int floor;
+    private int floor_num;
     private double rent;
     private int rooms;
     private boolean balcony;
@@ -10,9 +10,9 @@ public class Apartment extends Estate {
     public Apartment() {}
     public Apartment(int id, String city, String postalCode, String street, String streetNumber,
                      double squareArea, int agentId,
-                     int floor, double rent, int rooms, boolean balcony, boolean builtInKitchen) {
+                     int floor_num, double rent, int rooms, boolean balcony, boolean builtInKitchen) {
         super(id, city, postalCode, street, streetNumber, squareArea, agentId);
-        this.floor = floor; this.rent = rent; this.rooms = rooms;
+        this.floor_num = floor_num; this.rent = rent; this.rooms = rooms;
         this.balcony = balcony; this.builtInKitchen = builtInKitchen;
     }
     public Apartment(String city, String postalCode, String street, String streetNumber,
@@ -22,8 +22,8 @@ public class Apartment extends Estate {
             floor, rent, rooms, balcony, builtInKitchen);
     }
 
-    public int getFloor() { return floor; }
-    public void setFloor(int floor) { this.floor = floor; }
+    public int getFloor() { return floor_num; }
+    public void setFloor(int floor_num) { this.floor_num = floor_num; }
     public double getRent() { return rent; }
     public void setRent(double rent) { this.rent = rent; }
     public int getRooms() { return rooms; }

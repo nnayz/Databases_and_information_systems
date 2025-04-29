@@ -8,13 +8,13 @@ public class TenancyContract extends Contract {
     private double additionalCosts;
 
     public TenancyContract() {}
-    public TenancyContract(int id, String contractNo, LocalDate date, String place,
+    public TenancyContract(int id, int contractNo, LocalDate date, String place,
                            int personId, int estateId, LocalDate startDate,
                            int duration, double additionalCosts) {
         super(id, contractNo, date, place, personId, estateId);
         this.startDate = startDate; this.duration = duration; this.additionalCosts = additionalCosts;
     }
-    public TenancyContract(String contractNo, LocalDate date, String place,
+    public TenancyContract(int contractNo, LocalDate date, String place,
                            int personId, int estateId, LocalDate startDate,
                            int duration, double additionalCosts) {
         this(0, contractNo, date, place, personId, estateId, startDate, duration, additionalCosts);
