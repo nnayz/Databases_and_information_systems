@@ -12,7 +12,8 @@ public class ContractDAO {
 
     public int createContract(Contract c) throws SQLException {
         String sql = "INSERT INTO contract(date,place,person_id,estate_id) VALUES (?,?,?,?,?)";
-        try (Connection con = DBConnection.get();
+        Connection con = DBConnection.get();
+        try (
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setDate(2, Date.valueOf(c.getDate()));
             ps.setString(3, c.getPlace());
@@ -33,7 +34,8 @@ public class ContractDAO {
     public void createTenancy(TenancyContract tc) throws SQLException {
         int cid = createContract(tc);
         String sql = "INSERT INTO tenancycontract(contract_no,start_date,duration,additional_costs) VALUES (?,?,?,?)";
-        try (Connection con = DBConnection.get();
+        Connection con = DBConnection.get();
+        try (
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, cid);
             ps.setDate(2, Date.valueOf(tc.getStartDate()));
@@ -46,7 +48,8 @@ public class ContractDAO {
     public void createPurchase(PurchaseContract pc) throws SQLException {
         int cid = createContract(pc);
         String sql = "INSERT INTO purchasecontract(contract_no,installments,interest_rate) VALUES (?,?,?)";
-        try (Connection con = DBConnection.get();
+        Connection con = DBConnection.get();
+        try (
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, cid);
             ps.setInt(2, pc.getInstallments());
@@ -70,7 +73,9 @@ public class ContractDAO {
             "JOIN person p ON p.id=c.person_id " +
             "JOIN estate e ON e.id=c.estate_id " +
             "ORDER BY contract_no";
-        try (Connection con = DBConnection.get();
+        Connection con = DBConnection.get();
+        
+        try (
              Statement st = con.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {

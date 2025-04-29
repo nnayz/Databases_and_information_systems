@@ -70,10 +70,12 @@ public class Main {
                     System.out.print("New password (blank keep): "); String pw = sc.nextLine();
                     if (!pw.isBlank()) a.setPassword(pw);
                     agentDAO.update(a);
+                    System.out.println("Agent updated.");
                 }
                 case "4" -> {
                     System.out.print("Agent id: "); int id = Integer.parseInt(sc.nextLine());
                     agentDAO.delete(id);
+                    System.out.print("Agent deleted.");
                 }
                 case "0" -> { return; }
                 default -> System.out.println("Unknown"); }
@@ -111,7 +113,8 @@ public class Main {
                 case "3" -> createHouse(agent);
                 case "4" -> {
                     System.out.print("Estate id: "); int id = Integer.parseInt(sc.nextLine());
-                    apartmentDAO.delete(id); // will work for house too
+                    apartmentDAO.delete(id);
+                    System.out.println("Estate deleted.");
                 }
                 case "0" -> { return; }
                 default -> System.out.println("Unknown");

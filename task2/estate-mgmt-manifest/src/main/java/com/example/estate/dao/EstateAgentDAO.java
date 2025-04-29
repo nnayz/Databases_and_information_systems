@@ -20,7 +20,8 @@ public class EstateAgentDAO {
 
     public void create(EstateAgent a) throws SQLException {
         String sql = "INSERT INTO estateagent(name,address,username,password) VALUES (?,?,?,?)";
-        try (Connection c = DBConnection.get(); PreparedStatement ps =
+        Connection c = DBConnection.get();
+        try ( PreparedStatement ps =
                 c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, a.getName());
             ps.setString(2, a.getAddress());
@@ -40,7 +41,8 @@ public class EstateAgentDAO {
 
     public EstateAgent findByLogin(String login) throws SQLException {
         String sql = "SELECT * FROM estateagent WHERE username=?";
-        try (Connection c = DBConnection.get(); PreparedStatement ps = c.prepareStatement(sql)) {
+        Connection c = DBConnection.get();
+        try ( PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, login);
             try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return map(rs); }
         }
@@ -49,7 +51,8 @@ public class EstateAgentDAO {
 
     public List<EstateAgent> findAll() throws SQLException {
         List<EstateAgent> list = new ArrayList<>();
-        try (Connection c = DBConnection.get(); Statement st = c.createStatement();
+        Connection c = DBConnection.get();
+        try ( Statement st = c.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM estateagent ORDER BY agent_id")) {
             while (rs.next()) list.add(map(rs));
         }
@@ -58,7 +61,8 @@ public class EstateAgentDAO {
 
     public void update(EstateAgent a) throws SQLException {
         String sql = "UPDATE estateagent SET name=?, address=?, password=? WHERE agent_id=?";
-        try (Connection c = DBConnection.get(); PreparedStatement ps = c.prepareStatement(sql)) {
+        Connection c = DBConnection.get();
+        try ( PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, a.getName());
             ps.setString(2, a.getAddress());
             ps.setString(3, a.getPassword());
@@ -67,10 +71,11 @@ public class EstateAgentDAO {
         }
     }
 
-    public void delete(int username) throws SQLException {
-        try (Connection c = DBConnection.get(); PreparedStatement ps =
-                c.prepareStatement("DELETE FROM estateagent WHERE username=?")) {
-            ps.setInt(1, username);
+    public void delete(int id) throws SQLException {
+        Connection c = DBConnection.get(); 
+        try (PreparedStatement ps =
+                c.prepareStatement("DELETE FROM estateagent WHERE agent_id=?")) {
+            ps.setInt(1, id);
             ps.executeUpdate();
         }
     }
