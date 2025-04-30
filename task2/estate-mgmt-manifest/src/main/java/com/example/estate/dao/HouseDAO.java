@@ -70,7 +70,7 @@ public class HouseDAO {
 
     private House map(ResultSet rs) throws SQLException {
         return new House(
-            rs.getInt("house_id"),
+            rs.getInt("estate_id"),
             rs.getString("city"),
             rs.getString("postal_code"),
             rs.getString("street"),
