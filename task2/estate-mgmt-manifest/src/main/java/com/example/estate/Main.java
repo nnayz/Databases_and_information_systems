@@ -170,23 +170,23 @@ public class Main {
     }
 
     private void signTenancy() throws SQLException {
-        System.out.print("Contract no: "); int no = Integer.parseInt(sc.nextLine());
+        //System.out.print("Contract no: "); int no = Integer.parseInt(sc.nextLine());
         System.out.print("Person id: "); int pid = Integer.parseInt(sc.nextLine());
         System.out.print("Apartment estate id: "); int eid = Integer.parseInt(sc.nextLine());
         System.out.print("Start date (YYYY-MM-DD): "); LocalDate start = LocalDate.parse(sc.nextLine());
         System.out.print("Duration months: "); int dur = Integer.parseInt(sc.nextLine());
         System.out.print("Add. costs: "); double costs = Double.parseDouble(sc.nextLine());
-        TenancyContract tc = new TenancyContract(no, LocalDate.now(), "Online", pid, eid, start, dur, costs);
+        TenancyContract tc = new TenancyContract( LocalDate.now(), "Online", pid, eid, start, dur, costs);
         contractDAO.createTenancy(tc);
     }
 
     private void signPurchase() throws SQLException {
-        System.out.print("Contract no: "); int no = Integer.parseInt(sc.nextLine());
+        //System.out.print("Contract no: "); int no = Integer.parseInt(sc.nextLine());
         System.out.print("Person id: "); int pid = Integer.parseInt(sc.nextLine());
         System.out.print("House estate id: "); int eid = Integer.parseInt(sc.nextLine());
         System.out.print("Installments: "); int inst = Integer.parseInt(sc.nextLine());
         System.out.print("Interest rate %: "); double rate = Double.parseDouble(sc.nextLine());
-        PurchaseContract pc = new PurchaseContract(no, LocalDate.now(), "Online", pid, eid, inst, rate);
+        PurchaseContract pc = new PurchaseContract(LocalDate.now(), "Online", pid, eid, inst, rate);
         contractDAO.createPurchase(pc);
     }
 }

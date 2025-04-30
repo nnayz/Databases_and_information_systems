@@ -13,13 +13,13 @@ public class EstateAgentDAO {
             rs.getInt("agent_id"),
             rs.getString("name"),
             rs.getString("address"),
-            rs.getString("username"),
+            rs.getString("login"),
             rs.getString("password")
         );
     }
 
     public void create(EstateAgent a) throws SQLException {
-        String sql = "INSERT INTO estateagent(name,address,username,password) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO estate_agent(name,address,login,password) VALUES (?,?,?,?)";
         Connection c = DBConnection.get();
         try ( PreparedStatement ps =
                 c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -40,7 +40,7 @@ public class EstateAgentDAO {
     }
 
     public EstateAgent findByLogin(String login) throws SQLException {
-        String sql = "SELECT * FROM estateagent WHERE username=?";
+        String sql = "SELECT * FROM estate_agent WHERE login=?";
         Connection c = DBConnection.get();
         try ( PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, login);
@@ -53,14 +53,14 @@ public class EstateAgentDAO {
         List<EstateAgent> list = new ArrayList<>();
         Connection c = DBConnection.get();
         try ( Statement st = c.createStatement();
-             ResultSet rs = st.executeQuery("SELECT * FROM estateagent ORDER BY agent_id")) {
+             ResultSet rs = st.executeQuery("SELECT * FROM estate_agent ORDER BY agent_id")) {
             while (rs.next()) list.add(map(rs));
         }
         return list;
     }
 
     public void update(EstateAgent a) throws SQLException {
-        String sql = "UPDATE estateagent SET name=?, address=?, password=? WHERE agent_id=?";
+        String sql = "UPDATE estate_agent SET name=?, address=?, password=? WHERE agent_id=?";
         Connection c = DBConnection.get();
         try ( PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, a.getName());
@@ -74,7 +74,7 @@ public class EstateAgentDAO {
     public void delete(int id) throws SQLException {
         Connection c = DBConnection.get(); 
         try (PreparedStatement ps =
-                c.prepareStatement("DELETE FROM estateagent WHERE agent_id=?")) {
+                c.prepareStatement("DELETE FROM estate_agent WHERE agent_id=?")) {
             ps.setInt(1, id);
             ps.executeUpdate();
         }

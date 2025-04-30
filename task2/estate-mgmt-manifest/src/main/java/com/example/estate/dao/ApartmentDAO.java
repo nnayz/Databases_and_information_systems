@@ -28,7 +28,7 @@ public class ApartmentDAO {
                 }
             }
             try (PreparedStatement pst = c.prepareStatement(
-                    "INSERT INTO apartment(estate_id,floor_number,rent,rooms,balcony,built_in_kitchen) VALUES (?,?,?,?,?,?)")) {
+                    "INSERT INTO apartment(estate_id,floor,rent,rooms,balcony,built_in_kitchen) VALUES (?,?,?,?,?,?)")) {
                 pst.setInt(1, a.getId());
                 pst.setInt(2, a.getFloor());
                 pst.setDouble(3, a.getRent());
@@ -82,7 +82,7 @@ public class ApartmentDAO {
             rs.getString("street_number"),
             rs.getDouble("square_area"),
             rs.getInt("agent_id"),
-            rs.getInt("floor_number"),
+            rs.getInt("floor"),
             rs.getDouble("rent"),
             rs.getInt("rooms"),
             rs.getBoolean("balcony"),
