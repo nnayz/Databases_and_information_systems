@@ -8,9 +8,10 @@ public class TenancyContract extends Contract {
     private double additionalCosts;
     private int personId;    
     private int apartmentId;
+
     public TenancyContract() {}
     public TenancyContract(int contractNo, LocalDate date, String place,
-    int personId, int estateId,
+    int personId, int apartmentId,
     LocalDate startDate, int duration, double additionalCosts) {
         super(contractNo, date, place);
         this.startDate = startDate;
@@ -20,9 +21,9 @@ public class TenancyContract extends Contract {
         this.apartmentId = apartmentId;
 }
 public TenancyContract(LocalDate date, String place,
-int personId, int estateId,
+int personId, int apartmentId,
 LocalDate startDate, int duration, double additionalCosts) {
-this(0, date, place, personId, estateId, startDate, duration, additionalCosts);
+this(0, date, place, personId, apartmentId, startDate, duration, additionalCosts);
 }
 
     public LocalDate getStartDate() { return startDate; }

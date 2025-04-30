@@ -75,7 +75,7 @@ public class ApartmentDAO {
 
     private Apartment map(ResultSet rs) throws SQLException {
         return new Apartment(
-            rs.getInt("apartment_id"),
+            rs.getInt("estate_id"),
             rs.getString("city"),
             rs.getString("postal_code"),
             rs.getString("street"),

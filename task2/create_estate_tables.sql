@@ -1,89 +1,98 @@
--- create estate tables --
 
--- Create the estateAgent table --
-CREATE TABLE IF NOT EXISTS EstateAgent (
-    agent_id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    username VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+
+CREATE TABLE estate_agent (
+    agent_id         SERIAL PRIMARY KEY,
+    name             VARCHAR(100) NOT NULL,
+    address          VARCHAR(255),
+    login            VARCHAR(80)  UNIQUE NOT NULL,
+    password         VARCHAR(120) NOT NULL
 );
 
--- Create the estate table --
-CREATE TABLE IF NOT EXISTS Estate (
-    estate_id SERIAL PRIMARY KEY,
-    city VARCHAR(255) NOT NULL,
-    postal_code VARCHAR(20) NOT NULL,
-    street VARCHAR(255) NOT NULL,
-    street_number VARCHAR(20) NOT NULL,
-    square_area DECIMAL(10, 2),
-    agent_id INTEGER NOT NULL,
-    FOREIGN KEY (agent_id) REFERENCES EstateAgent(agent_id)
-);
-
--- CREATE the apartments table --
-CREATE TABLE IF NOT EXISTS Apartment (
-    apartment_id SERIAL PRIMARY KEY,
-    estate_id INTEGER NOT NULL,
-    floor_number INTEGER NOT NULL,
-    rent DECIMAL(10, 2),
-    rooms INTEGER,
-    balcony BOOLEAN,
-    built_in_kitchen BOOLEAN,
-    FOREIGN KEY (estate_id) REFERENCES Estate(estate_id)
-);
-
--- Create the house table --
-CREATE TABLE IF NOT EXISTS House (
-    house_id SERIAL PRIMARY KEY,
-    estate_id INTEGER NOT NULL,
-    floors INTEGER NOT NULL,
-    price DECIMAL(10, 2),
-    garden BOOLEAN,
-    FOREIGN KEY (estate_id) REFERENCES Estate(estate_id)
-);
-
--- Create the Person table --
-CREATE TABLE IF NOT EXISTS Person (
-    person_id SERIAL PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    address VARCHAR(255)
-);
-
--- Create the Contract table --
-CREATE TABLE IF NOT EXISTS Contract (
-    contract_no SERIAL PRIMARY KEY,
-    person_id INTEGER NOT NULL,
-    date DATE NOT NULL,
-    place VARCHAR(255),
-    FOREIGN KEY (person_id) REFERENCES Person(person_id)
+CREATE TABLE person (
+    person_id   SERIAL PRIMARY KEY,
+    first_name  VARCHAR(60),
+    name        VARCHAR(60)  NOT NULL,
+    address     VARCHAR(255)
 );
 
 
--- Create the TenancyContract table --
-CREATE TABLE IF NOT EXISTS TenancyContract (
-    contract_no INTEGER NOT NULL,
-    estate_id INTEGER NOT NULL,
-    start_date DATE NOT NULL,
-    duration INTEGER NOT NULL,
-    additional_costs DECIMAL(10, 2),
-    FOREIGN KEY (estate_id) REFERENCES Apartment(apartment_id),
-    FOREIGN KEY (contract_no) REFERENCES Contract(contract_no)
+CREATE TABLE estate (
+    estate_id     SERIAL PRIMARY KEY,
+    city          VARCHAR(60),
+    postal_code   VARCHAR(15),
+    street        VARCHAR(80),
+    street_number VARCHAR(15),
+    square_area   NUMERIC(10,2) CHECK (square_area >= 0),
+
+
+    agent_id      INT NOT NULL
+        REFERENCES estate_agent (agent_id)
+        ON DELETE RESTRICT
 );
 
--- Create the PurchaseContract table --
-CREATE TABLE IF NOT EXISTS PurchaseContract (
-    contact_no INTEGER NOT NULL,
-    estate_id INTEGER NOT NULL,
-    number_of_installments INTEGER,
-    interest_rate DECIMAL(5, 2),
-    FOREIGN KEY (estate_id) REFERENCES House(house_id),
-    FOREIGN KEY (contact_no) REFERENCES Contract(contract_no)
+CREATE TABLE apartment (
+    estate_id         INT PRIMARY KEY
+        REFERENCES estate (estate_id)
+        ON DELETE CASCADE,
+    floor             INT,
+    rent              NUMERIC(12,2) CHECK (rent >= 0),
+    rooms             INT,
+    balcony           BOOLEAN DEFAULT FALSE,
+    built_in_kitchen  BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE house (
+    estate_id  INT PRIMARY KEY
+        REFERENCES estate (estate_id)
+        ON DELETE CASCADE,
+    floors     INT,
+    price      NUMERIC(14,2) CHECK (price >= 0),
+    garden     BOOLEAN DEFAULT FALSE
+);
+
+
+CREATE TABLE contract (
+    contract_no   SERIAL PRIMARY KEY,
+    contract_date DATE    NOT NULL,
+    place         VARCHAR(120)
 );
 
 
 
+CREATE TABLE tenancy_contract (
+    contract_no       INT PRIMARY KEY
+        REFERENCES contract (contract_no)
+        ON DELETE CASCADE,
+    start_date        DATE NOT NULL,
+    duration          INT  CHECK (duration > 0),          
+    additional_costs  NUMERIC(12,2),
+
+    person_id    INT NOT NULL
+        REFERENCES person (person_id)
+        ON DELETE RESTRICT,
+    apartment_id INT NOT NULL
+        REFERENCES apartment (estate_id)
+        ON DELETE RESTRICT,
 
 
+    UNIQUE (apartment_id)
+);
+
+
+CREATE TABLE purchase_contract (
+    contract_no         INT PRIMARY KEY
+        REFERENCES contract (contract_no)
+        ON DELETE CASCADE,
+    no_of_installments  INT     CHECK (no_of_installments > 0),
+    interest_rate       NUMERIC(5,2),
+
+    person_id  INT NOT NULL
+        REFERENCES person (person_id)
+        ON DELETE RESTRICT,
+    house_id   INT NOT NULL
+        REFERENCES house (estate_id)
+        ON DELETE RESTRICT,
+
+    UNIQUE (house_id)
+);
 
