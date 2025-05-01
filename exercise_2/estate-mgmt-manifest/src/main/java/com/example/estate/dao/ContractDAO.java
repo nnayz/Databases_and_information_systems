@@ -30,9 +30,10 @@ public class ContractDAO {
     }
 
     public void createTenancy(TenancyContract tc) throws SQLException {
+        Connection con = DBConnection.get();
+        con.setAutoCommit(false);
         int cid = createContract(tc);
         String sql = "INSERT INTO tenancy_contract(contract_no,start_date,duration,additional_costs, person_id, apartment_id) VALUES (?,?,?,?,?,?)";
-        Connection con = DBConnection.get();
         try (
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, cid);
@@ -43,6 +44,8 @@ public class ContractDAO {
             ps.setInt(6, tc.getEstateId());
             ps.executeUpdate();
         }
+        con.commit();
+        con.setAutoCommit(true);
     }
 
     public void createPurchase(PurchaseContract pc) throws SQLException {

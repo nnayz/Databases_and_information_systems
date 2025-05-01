@@ -45,11 +45,11 @@ INSERT INTO contract (contract_date, place) VALUES
 
 -- Populate tenancy_contract table
 INSERT INTO tenancy_contract (contract_no, start_date, duration, additional_costs, person_id, apartment_id) VALUES 
-(1, '2023-07-01', 24, 200.00, 1, 1),
-(2, '2023-08-01', 12, 150.00, 2, 3);
+(1, '2023-07-01', 24, 200.00, 1, 16),
+(2, '2023-08-01', 12, 150.00, 2, 18);
 
 -- Populate purchase_contract table
 INSERT INTO purchase_contract (contract_no, no_of_installments, interest_rate, person_id, house_id) VALUES 
-(3, 240, 3.5, 3, 2),
-(4, 360, 2.8, 4, 5),
-(5, 180, 3.2, 5, 6); 
+(3, 240, 3.5, 3, 17),
+(4, 360, 2.8, 4, 20),
+(5, 180, 3.2, 5, 21); 
