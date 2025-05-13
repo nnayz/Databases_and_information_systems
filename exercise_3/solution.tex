@@ -1,0 +1,51 @@
+\documentclass{article}
+\usepackage{enumitem}
+\usepackage{listings}
+
+\begin{document}
+    \title{Exercise 3}
+    \author{Nasrul Huda, Aldo Sula}
+    \maketitle
+
+    \section{3. Synchronization with Locking Protocols}
+    \subsection{3.1. Isolation Levels}
+    \begin{enumerate}[label=\alph*)]
+        \item The current isolation level is \textbf{READ COMMITTED}.The isolation levels supported by the PostgreSQL are:
+        \begin{itemize}
+            \item READ UNCOMMITTED
+            \item READ COMMITTED
+            \item REPEATABLE READ
+            \item SERIALIZABLE
+        \end{itemize}
+
+        \item Sample table named sheet3 with columns id and name is created. Sample data is inserted into the table.
+        
+        \item The autocommit is set to off with the command \begin{lstlisting}[language=sql]
+            \set AUTOCOMMIT off;
+        \end{lstlisting}
+
+        Query one row from table sheet3 and find out the currently held locks: 
+        
+        Result of querying a row and checking locks:
+        \begin{lstlisting}
+dis-2025=> SELECT * FROM sheet3 WHERE id = 1;
+ id | name 
+----+------
+  1 | John
+(1 row)
+
+dis-2025=> SELECT relation::regclass, mode, granted
+   FROM pg_locks
+   WHERE relation::regclass = 'sheet3'::regclass;
+ relation | mode | granted 
+----------+------+---------
+(0 rows)
+        \end{lstlisting}
+        
+        The result shows no locks on the sheet3 table. This is because in READ COMMITTED isolation level, PostgreSQL acquires row-level read locks during query execution but releases them immediately after the statement completes. Since our SELECT query finished before we checked for locks, any locks that were held had already been released.
+        
+    \end{enumerate}
+    
+    
+\end{document}
+
