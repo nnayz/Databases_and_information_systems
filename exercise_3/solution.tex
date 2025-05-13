@@ -27,25 +27,210 @@
         Query one row from table sheet3 and find out the currently held locks: 
         
         Result of querying a row and checking locks:
-        \begin{lstlisting}
-dis-2025=> SELECT * FROM sheet3 WHERE id = 1;
- id | name 
-----+------
-  1 | John
-(1 row)
+        \begin{lstlisting}[language=sql]
+SELECT * FROM sheet3 WHERE id = 1;
+        \end{lstlisting}
 
-dis-2025=> SELECT relation::regclass, mode, granted
-   FROM pg_locks
-   WHERE relation::regclass = 'sheet3'::regclass;
- relation | mode | granted 
-----------+------+---------
-(0 rows)
+        \begin{lstlisting}
+            id | name 
+            ----+------
+             1 | John
+        \end{lstlisting}
+
+        \begin{lstlisting}[language=sql]
+SELECT relation::regclass, mode, granted
+FROM pg_locks
+WHERE relation::regclass = 'sheet3'::regclass;
         \end{lstlisting}
         
         The result shows no locks on the sheet3 table. This is because in READ COMMITTED isolation level, PostgreSQL acquires row-level read locks during query execution but releases them immediately after the statement completes. Since our SELECT query finished before we checked for locks, any locks that were held had already been released.
+
+        \item The transaction is started with the command \begin{lstlisting}[language=sql]
+-- Transaction 1
+BEGIN;
+SELECT * FROM sheet3 WHERE id = 1;
+COMMIT;
+        \end{lstlisting}
+
+        -- Serializable Transaction
+        \begin{lstlisting}[language=sql]
+BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+SELECT * FROM sheet3 WHERE id = 1;
+COMMIT;
+        \end{lstlisting}
+
+        Steps repeated for the serializable transaction:
+
+        The locks held by the transaction are:
+
+        \begin{lstlisting}
+        relation |      mode       | granted 
+        ----------+-----------------+---------
+        sheet3   | AccessShareLock | t
+        sheet3   | SIReadLock      | t
+        (2 rows)
+        \end{lstlisting}
+        Locks held by the transaction:
+        \begin{itemize}
+            \item Serializable Read Lock 
+        \end{itemize}
+        
+        Serializable transaction acquires a row-level read lock on the sheet3 table and holds it until the transaction is committed.
         
     \end{enumerate}
     
+    \subsection{3.2 Lock Conflicts}
+    \begin{enumerate}[label=\alph*)]
+        \item First connection with isolation level \textbf{READ COMMITTED} and \textbf{AUTOCOMMIT off}
+
+        \begin{lstlisting}[language=sql]
+SELECT * FROM sheet3 WHERE id > 3;
+        \end{lstlisting}
+
+        \begin{lstlisting}
+            id |  name  
+            ----+--------
+              4 | Nasrul
+              5 | Raj
+              6 | Aldo
+              7 | Alia
+              8 | Ayesha
+            (5 rows)
+        \end{lstlisting}
+
+        Second connection with isolation level \textbf{READ COMMITTED} and \textbf{AUTOCOMMIT on}
+
+        Inserts a new row into the sheet3 table;
+
+        \begin{lstlisting}[language=sql]
+INSERT INTO sheet3 (id, name) VALUES (9, 'Bill');
+        \end{lstlisting}
+
+        First connection repeating the query;
+        \begin{lstlisting}[language=sql]
+SELECT * FROM sheet3 WHERE id > 3;
+        \end{lstlisting}
+
+        \begin{lstlisting}
+            id |  name  
+            ----+--------
+            4 | Nasrul
+            5 | Raj
+            6 | Aldo
+            7 | Alia
+            8 | Ayesha
+            9 | Bill
+            (6 rows)
+        \end{lstlisting}
+
+The new row is visible. Even though the first connected has not yet committed, when the SELECT query is run again in the same transaction, the new row is visible. This is because the second connection has committed the new row and the first connection is in READ COMMITTED isolation level.
+        
+        \item First connection's isolation level is set to \textbf{REPEATABLE READ} with \textbf{AUTOCOMMIT off}
+
+        \begin{lstlisting}[language=sql]
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+        \end{lstlisting}
+
+        Repeats the query:
+        \begin{lstlisting}[language=sql]
+SELECT * FROM sheet3 WHERE id > 3;
+        \end{lstlisting}
+
+        \begin{lstlisting}
+            id |  name  
+            ----+--------
+              4 | Nasrul
+              5 | Raj
+              6 | Aldo
+              7 | Alia
+              8 | Ayesha
+              9 | Bill
+            (6 rows)
+        \end{lstlisting}
+
+        Whereas in the second connection, a new row is inserted at the same time:
+        \begin{lstlisting}[language=sql]
+INSERT INTO sheet3 (id, name) VALUES (10, 'Chris');
+        \end{lstlisting}
+
+        Repeats the query in the first connection:
+        \begin{lstlisting}[language=sql]
+SELECT * FROM sheet3 WHERE id > 3;
+        \end{lstlisting}
+
+        \begin{lstlisting}
+            id |  name  
+            ----+--------
+              4 | Nasrul
+              5 | Raj
+              6 | Aldo
+              7 | Alia
+              8 | Ayesha
+              9 | Bill
+            (6 rows)
+        \end{lstlisting}
+
+        The new row is not visible to the first connection. This is because the first connection is in REPEATABLE READ isolation level and the
+        second is in READ COMMITTED isolation level. The second connection has committed the new row but the first connection has not yet committed.
+
+        REPEATABLE READ takes a snapshot of the database at the start of the transaction, not at the start of each statement (unlike READ COMMITTED)
+        
+        The locks held before the commit of the first transaction are: 
+        \begin{lstlisting}[language=sql]
+SELECT relation::regclass, mode, granted
+FROM pg_locks
+WHERE relation::regclass = 'sheet3'::regclass;
+        \end{lstlisting}
+
+        \begin{lstlisting}
+        relation | mode | granted 
+        ----------+------+---------
+        sheet3   | AccessShareLock | t
+        sheet3   | SIReadLock      | t
+        (2 rows)
+        \end{lstlisting}
+        
+        After the commit of the first transaction, the newly inserted row is visible in the first transaction.
+
+        \begin{lstlisting}
+            id |  name  
+            ----+--------
+              4 | Nasrul
+              5 | Raj
+              6 | Aldo
+              7 | Alia
+              8 | Ayesha
+              9 | Bill
+             10 | Chris
+            (7 rows)
+        \end{lstlisting}
+
+        \item Update one row in the first connection with isolation level \textbf{REPEATABLE READ} and \textbf{AUTOCOMMIT off}
+        
+        \begin{lstlisting}[language=sql]
+UPDATE sheet3 SET name = 'Brock' WHERE id = 1;
+        \end{lstlisting}
+
+        Haven't committed the transaction yet.
+        While in the second connection, another row is updated with id 2:
+
+        \begin{lstlisting}[language=sql]
+UPDATE sheet3 SET name = 'Shayne' WHERE id = 2;
+        \end{lstlisting}
+
+        And again in the second connection, the same row with id = 1 is updated with name = 'Shayne':
+
+        \begin{lstlisting}[language=sql]
+UPDATE sheet3 SET name = 'Shayne' WHERE id = 1;
+        \end{lstlisting}
+
+        The transaction will now be blocked, because the first connection has not yet committed.
+
+        The isolation level does not matter for this particular blocking behavior. Whether using READ COMMITTED or REPEATABLE READ, PostgreSQL always prevents concurrent updates to the same row (this prevents "lost updates").
+
+        Only after connection 1 commits or rolls back, releasing its lock on row id=1, will connection 2's update proceed. At that point, connection 2's update will overwrite connection 1's changes to that row.
+
+        \end{enumerate}
     
 \end{document}
 
