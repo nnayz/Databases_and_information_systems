@@ -15,8 +15,8 @@ class Items(Base):
 Base.metadata.create_all(engine)
 
 # Lock types
-READ_LOCK = "FOR SHARE" # Shared lock (S)
-WRITE_LOCK = "FOR UPDATE" # Exclusive lock (X)
+READ_LOCK = "FOR SHARE" # Shared lock (S) or READ lock (R)
+WRITE_LOCK = "FOR UPDATE" # Exclusive lock (X) or WRITE lock (W)
 
 # -- Transactions Operations -- #
 # T1 sets x=100 and y=110

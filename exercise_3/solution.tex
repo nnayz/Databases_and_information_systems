@@ -305,15 +305,6 @@ and another (with lower isolation) writes to that range, the
         \item \textbf{Why it fails:} Each session is waiting on the other. PostgreSQL aborts one to avoid an endless wait.
     \end{itemize}
 
-    \item \textbf{Unique Constraint Violation}
-
-    If a transaction tries to insert a row with a duplicate value for a unique column (like a primary key), PostgreSQL must reject the operation to keep data correct.
-
-    \textit{Example:}
-    \begin{itemize}
-        \item Try to insert another row with \texttt{id = 1}.
-        \item \textbf{Why it fails:} The primary key already exists. PostgreSQL immediately aborts the transaction to prevent duplicate data.
-    \end{itemize}
 
     \item \textbf{Serializable vs Repeatable Read Read/Write Conflict}
 
