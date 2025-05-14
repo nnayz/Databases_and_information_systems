@@ -204,6 +204,24 @@ WHERE relation::regclass = 'sheet3'::regclass;
              10 | Chris
             (7 rows)
         \end{lstlisting}
+        \vspace{8em}
+        Would the same thing happen if PostgreSQL was using strict 2PL?
+
+        \textbf{No, it would be different}
+
+        \textbf{Why? Here is what will happen:}
+
+        \begin{itemize}
+                \item When Session 1 reads \texttt{id > 3}, it would \textbf{lock that range}.
+                \item Then, if Session 2 tries to insert a row like \texttt{id = 5}, it would have to \textbf{wait}.
+                \item Session 2 can't continue until Session 1 is done (commits or rolls back).
+        \end{itemize}
+            
+        In PostgreSQL, this doesn't happen. Session 2 is allowed to insert right away, and Session 1 doesn't see the new row because it's using an old snapshot.
+
+        So, \textbf{2PL would block}, but PostgreSQL's method just avoids the problem by hiding the new data until the first transaction finishes.
+
+
 
         \item Update one row in the first connection with isolation level \textbf{REPEATABLE READ} and \textbf{AUTOCOMMIT off}
         
@@ -230,7 +248,88 @@ UPDATE sheet3 SET name = 'Shayne' WHERE id = 1;
 
         Only after connection 1 commits or rolls back, releasing its lock on row id=1, will connection 2's update proceed. At that point, connection 2's update will overwrite connection 1's changes to that row.
 
+
+        \item When does PostgreSQL abort or rollback a transaction?
+        
+        We tested different situations using two connections with different isolation levels. Some actions caused a rollback or abort. Below are the main cases, with explanations on why PostgreSQL chooses to abort in each case.
+
+        \begin{enumerate}
+                \item \textbf{Serializable Read/Write Conflict}
+
+When two transactions use \texttt{SERIALIZABLE} isolation, PostgreSQL tries to make sure the final result looks like the transactions ran one after the other. If one transaction reads a row and the other updates it, PostgreSQL cannot guarantee that order anymore. So, it aborts one of them.
+
+    \textit{Example:}
+    \begin{itemize}
+        \item Session 1 reads \texttt{id = 1}.
+        \item Session 2 updates \texttt{id = 1} and commits.
+        \item Session 1 tries to update the same row and commit.
+        \item \textbf{Why it fails:} 
+        PostgreSQL detects that both transactions changed the same data and can no longer keep the isolation. It aborts Session 1 to avoid incorrect results.
+    \end{itemize}
+
+    \item \textbf{Serializable Phantom Insert}
+
+    In \texttt{SERIALIZABLE}, PostgreSQL tracks ranges of data read by a transaction. If another transaction inserts a new row in that range, it creates a conflict (called a "phantom"). PostgreSQL may abort one of the transactions to prevent this.
+
+    \textit{Example:}
+    \begin{itemize}
+        \item Session 1 selects \texttt{id > 3}.
+        \item Session 2 inserts \texttt{id = 5} and commits.
+        \item Session 1 inserts \texttt{id = 6} and tries to commit.
+        \item \textbf{Why it fails:} The insert in Session 2 creates a new row in the range Session 1 had read. PostgreSQL sees this as a conflict and rolls back Session 1.
+    \end{itemize}
+
+    \item \textbf{Serializable vs Read Committed Range Conflict}
+
+When one transaction uses \texttt{SERIALIZABLE} and reads a range of rows, 
+and another (with lower isolation) writes to that range, the 
+\texttt{SERIALIZABLE} transaction might fail at commit.
+
+    \textit{Example:}
+    \begin{itemize}
+        \item Session 1 selects \texttt{id > 10}.
+        \item Session 2 (in \texttt{READ COMMITTED}) inserts \texttt{id = 11} and commits.
+        \item Session 1 tries to insert \texttt{id = 12} and commit.
+        \item \textbf{Why it fails:} The write from Session 2 breaks the serializability of Session 1's view. PostgreSQL aborts Session 1 to keep the transactions in a valid order.
+    \end{itemize}
+
+    \item \textbf{Deadlock}
+
+    A deadlock happens when two transactions each hold a lock and try to get the one the other is holding. PostgreSQL will notice this situation and abort one of the transactions to break the loop.
+
+    \textit{Example:}
+    \begin{itemize}
+        \item Session 1 updates \texttt{id = 1}.
+        \item Session 2 updates \texttt{id = 2}.
+        \item Session 1 then tries to update \texttt{id = 2}, while Session 2 tries to update \texttt{id = 1}.
+        \item \textbf{Why it fails:} Each session is waiting on the other. PostgreSQL aborts one to avoid an endless wait.
+    \end{itemize}
+
+    \item \textbf{Unique Constraint Violation}
+
+    If a transaction tries to insert a row with a duplicate value for a unique column (like a primary key), PostgreSQL must reject the operation to keep data correct.
+
+    \textit{Example:}
+    \begin{itemize}
+        \item Try to insert another row with \texttt{id = 1}.
+        \item \textbf{Why it fails:} The primary key already exists. PostgreSQL immediately aborts the transaction to prevent duplicate data.
+    \end{itemize}
+
+    \item \textbf{Serializable vs Repeatable Read Read/Write Conflict}
+
+    This conflict happens when a \texttt{SERIALIZABLE} transaction reads a row that a \texttt{REPEATABLE READ} transaction later modifies and commits. If the \texttt{SERIALIZABLE} transaction then tries to update that row too, PostgreSQL may detect an unsafe dependency and abort it.
+
+    \textit{Example:}
+    \begin{itemize}
+        \item Session 1 uses \texttt{SERIALIZABLE} and reads \texttt{id = 2}.
+        \item Session 2 uses \texttt{REPEATABLE READ} and updates \texttt{id = 2}, then commits.
+        \item Session 1 then tries to update \texttt{id = 2} and commit.
+        \item \textbf{Why it fails:} PostgreSQL sees that the data read by Session 1 was also changed by another transaction. This could lead to non-serial behavior, so PostgreSQL aborts Session 1.
+    \end{itemize}
+
+
         \end{enumerate}
     
+    \end{enumerate}
 \end{document}
 
