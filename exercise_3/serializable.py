@@ -32,8 +32,6 @@ def print_table():
 
 
 def schedule_s1():
-
-    
     
     # First connection
     conn1 = get_connection(isolation_level="SERIALIZABLE")
@@ -140,17 +138,14 @@ def schedule_s3():
     
 
 if __name__ == "__main__":
-    # schedule_s1()
 
-    # print("--------Result of schedule s1:---------")
-    # print_table()
+    schedule_choice = input("Enter the schedule number (1, 2, or 3): ")
+    if schedule_choice == "1":
+        schedule_s1()
+    elif schedule_choice == "2":
+        schedule_s2()
+    elif schedule_choice == "3":
+        schedule_s3()
 
-    # schedule_s2()
-
-    # print("--------Result of schedule s2:---------")
-    # print_table()
-
-    schedule_s3()
-
-    print("--------Result of schedule s3:---------")
+    print(f"--------Result of schedule {schedule_choice}:---------")
     print_table()
