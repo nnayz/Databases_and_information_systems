@@ -31,10 +31,10 @@ def print_table():
                 print(row)
 
 
-def schedule_s1():
+def schedule_s1(isolation_level):
     
     # First connection
-    conn1 = get_connection(isolation_level="SERIALIZABLE")
+    conn1 = get_connection(isolation_level=isolation_level)
     cursor1 = get_cursor(conn1)
 
     # Initialize the database using first connection
@@ -44,7 +44,7 @@ def schedule_s1():
     conn1.commit()
 
     # Second connection
-    conn2 = get_connection(isolation_level="SERIALIZABLE")
+    conn2 = get_connection(isolation_level=isolation_level)
     cursor2 = get_cursor(conn2)
 
     # r1(x)
@@ -66,10 +66,16 @@ def schedule_s1():
 
     # c1
     conn1.commit()
+
+    # print the table
+    print("--------Result of schedule s1:---------")
+    cursor1.execute("SELECT * FROM items")
+    for row in cursor1:
+        print(row)
     
-def schedule_s2():
+def schedule_s2(isolation_level):
     # initialize_database using first connection
-    conn1 = get_connection(isolation_level="SERIALIZABLE")
+    conn1 = get_connection(isolation_level=isolation_level)
     cursor1 = get_cursor(conn1)
     cursor1.execute("DELETE FROM items")
     cursor1.execute("INSERT INTO items (name, value) VALUES (%s, %s)", ("x", 0))
@@ -77,7 +83,7 @@ def schedule_s2():
     conn1.commit()
 
     # Second connection
-    conn2 = get_connection(isolation_level="SERIALIZABLE")
+    conn2 = get_connection(isolation_level=isolation_level)
     cursor2 = get_cursor(conn2)
 
     # r1(x)
@@ -96,10 +102,16 @@ def schedule_s2():
 
     # c1
     conn1.commit()
+    
+    # Print the table
+    print("--------Result of schedule s2:---------")
+    cursor1.execute("SELECT * FROM items")
+    for row in cursor1:
+        print(row)
 
-def schedule_s3():
+def schedule_s3(isolation_level):
     # initialize_database using first connection
-    conn1 = get_connection(isolation_level="SERIALIZABLE")
+    conn1 = get_connection(isolation_level=isolation_level)
     cursor1 = get_cursor(conn1)
     cursor1.execute("DELETE FROM items")
     cursor1.execute("INSERT INTO items (name, value) VALUES (%s, %s)", ("x", 0))
@@ -107,7 +119,7 @@ def schedule_s3():
     conn1.commit()
 
     # Second connection
-    conn2 = get_connection(isolation_level="SERIALIZABLE")
+    conn2 = get_connection(isolation_level=isolation_level)
     cursor2 = get_cursor(conn2)
 
     # r2(x)
@@ -135,17 +147,39 @@ def schedule_s3():
 
     # c2
     conn2.commit()
+
+    # Print the table
+    print("--------Result of schedule s3:---------")
+    cursor1.execute("SELECT * FROM items")
+    for row in cursor1:
+        print(row)
     
 
 if __name__ == "__main__":
 
-    schedule_choice = input("Enter the schedule number (1, 2, or 3): ")
-    if schedule_choice == "1":
-        schedule_s1()
-    elif schedule_choice == "2":
-        schedule_s2()
-    elif schedule_choice == "3":
-        schedule_s3()
+    while True:
+        isolation_level_choice = input("Enter your choice of isolation level:\n1. READ COMMITTED\n2. REPEATABLE READ\n3. SERIALIZABLE\n 4. Exit\n")
+        if isolation_level_choice == "1":
+            isolation_level = "READ COMMITTED"
+        elif isolation_level_choice == "2":
+            isolation_level = "REPEATABLE READ"
+        elif isolation_level_choice == "3":
+            isolation_level = "SERIALIZABLE"
+        elif isolation_level_choice == "4":
+            break
+        else:
+            print("Invalid choice. Please try again.")
+            continue
 
-    print(f"--------Result of schedule {schedule_choice}:---------")
-    print_table()
+        schedule_choice = input("Enter the schedule number (1, 2, or 3) or 4 to go back to the main menu: ")
+        if schedule_choice == "1":
+            schedule_s1(isolation_level)
+        elif schedule_choice == "2":
+            schedule_s2(isolation_level)
+        elif schedule_choice == "3":
+            schedule_s3(isolation_level)
+        elif schedule_choice == "4":
+            continue
+        else:
+            print("Invalid choice. Please try again.")
+            continue
