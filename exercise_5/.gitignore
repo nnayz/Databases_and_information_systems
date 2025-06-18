@@ -1,0 +1,4 @@
+data/*
+src/data/*
+target/classes/data/*
+.DS_Store
