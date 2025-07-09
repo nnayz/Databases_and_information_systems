@@ -23,7 +23,7 @@ CREATE TABLE
         geo_id SERIAL PRIMARY KEY,
         shop_id INT UNIQUE,
         shop_name VARCHAR(255),
-        city_name VARCHAR(255),
+        city_dim_geoname VARCHAR(255),
         region_name VARCHAR(255),
         country_name VARCHAR(255)
     );

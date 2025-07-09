@@ -15,7 +15,7 @@ except Exception as e:
     print("Schema execution failed:", e)
     conn.rollback()
 
-df = pd.read_csv("../data/sales.csv", sep=';', encoding='ISO-8859-1', on_bad_lines='skip')
+df = pd.read_csv("../data/sales.csv", sep=';', encoding='ISO-8859-1', on_bad_lines='skip') #locking number of rows
 
 df['Revenue'] = df['Revenue'].str.replace(',', '.').astype(float)
 df['Date'] = pd.to_datetime(df['Date'], format='%d.%m.%Y')
