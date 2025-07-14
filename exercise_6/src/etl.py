@@ -1,25 +1,36 @@
 import psycopg2
 import pandas as pd
 
-conn = psycopg2.connect(
-    dbname="exercise_6", user="postgres", password="postgres", host="localhost", port= "5432"
-)
-cursor = conn.cursor()
+try:
+    conn = psycopg2.connect(
+        dbname="exercise_6", 
+        user="postgres", 
+        password="postgres", 
+        host="localhost", 
+        port= "5432"
+    )
+    cursor = conn.cursor()
+except Exception as e:
+    print("Connection failed:", e)
+    exit(1)
 
+print("Creating star schema tables...")
 with open("../sql/star_schema.sql", "r") as f:
     schema_sql = f.read()
 try:
     cursor.execute(schema_sql)
     conn.commit()
+    print("Star schema created successfully.")
 except Exception as e:
     print("Schema execution failed:", e)
     conn.rollback()
 
-df = pd.read_csv("../data/sales.csv", sep=';', encoding='ISO-8859-1', on_bad_lines='skip') #locking number of rows
-
+print("Loading CSV data...")
+df = pd.read_csv("../data/sales.csv", sep=';', encoding='ISO-8859-1', on_bad_lines='skip')
 df['Revenue'] = df['Revenue'].str.replace(',', '.').astype(float)
 df['Date'] = pd.to_datetime(df['Date'], format='%d.%m.%Y')
-print("Data loaded successfully.")
+print(f"Data loaded successfully. Processing {len(df)} rows...")
+
 def insert_dim_date(date):
     cursor.execute("SELECT date_id FROM dim_date WHERE full_date = %s", (date,))
     res = cursor.fetchone()
@@ -31,7 +42,6 @@ def insert_dim_date(date):
     )
     conn.commit()
     return cursor.fetchone()[0]
-print("Date dimension populated successfully.")
 
 def insert_dim_geo(shop_name):
     cursor.execute("""
@@ -52,13 +62,11 @@ def insert_dim_geo(shop_name):
     if res:
         return res[0]
     cursor.execute("""
-        INSERT INTO dim_geo (shop_id, shop_name, city_name, region_name, country_name)
+        INSERT INTO dim_geo (shop_id, shop_name, city_dim_geoname, region_name, country_name)
         VALUES (%s, %s, %s, %s, %s) RETURNING geo_id
     """, (shop_id, shop, city, region, country))
     conn.commit()
     return cursor.fetchone()[0]
-
-print("Geo dimension populated successfully.")
 
 def insert_dim_product(article_name):
     cursor.execute("""
@@ -84,18 +92,34 @@ def insert_dim_product(article_name):
     """, (article_id, art, group, family, category))
     conn.commit()
     return cursor.fetchone()[0]
-print("Product dimension populated successfully.")
-for _, row in df.iterrows():
+
+print("Starting ETL process...")
+processed_count = 0
+skipped_count = 0
+
+for i, (_, row) in enumerate(df.iterrows()):
+    if i % 100 == 0 and i > 0:  # Progress indicator every 100 rows
+        print(f"Progress: {i}/{len(df)} rows processed ({processed_count} inserted, {skipped_count} skipped)")
+    
     date_id = insert_dim_date(row['Date'])
     geo_id = insert_dim_geo(row['Shop'])
     product_id = insert_dim_product(row['Article'])
+    
     if geo_id and product_id:
         cursor.execute("""
             INSERT INTO fact_sales (date_id, geo_id, product_id, sold, revenue)
             VALUES (%s, %s, %s, %s, %s)
         """, (date_id, geo_id, product_id, row['Sold'], row['Revenue']))
+        processed_count += 1
+    else:
+        print(f"Skipping row {i}: Shop '{row['Shop']}' or Article '{row['Article']}' not found in operational database")
+        skipped_count += 1
+
 conn.commit()
-print("Fact table populated successfully.")
+print(f"ETL process completed!")
+print(f"Total rows processed: {len(df)}")
+print(f"Rows inserted into fact table: {processed_count}")
+print(f"Rows skipped: {skipped_count}")
 
 cursor.close()
 conn.close()
