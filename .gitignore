@@ -6,3 +6,9 @@ exercise_5/data/tweets.json
 exercise_5/src/data/movies.json
 exercise_5/src/data/tweets.json
 *.json
+
+# Build artifacts and target directories
+target/
+*/target/
+*.class
+*.jar
