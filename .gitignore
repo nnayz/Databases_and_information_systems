@@ -1,10 +1,17 @@
 venv
+.venv
+.ropeproject
+.vscode
 
 # Large data files that shouldn't be tracked in git
 exercise_5/data/movies.json
 exercise_5/data/tweets.json
 exercise_5/src/data/movies.json
 exercise_5/src/data/tweets.json
+exercise_7/data/tweets.json
+exercise_7/data/movies.json
+exercise_7/src/data/tweets.json
+exercise_7/src/data/movies.json
 *.json
 
 # Build artifacts and target directories
